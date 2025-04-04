@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve([
-                    { codigo: 'MAT101', descripcion: 'Matemáticas' },
-                    { codigo: 'FIS102', descripcion: 'Física' }
+                    { codigo: 'MAT101', descripcion: 'Matemáticas', alumnos: [] },
+                    { codigo: 'FIS102', descripcion: 'Física', alumnos: [] }
                 ]);
             }, 1000);
         });
@@ -18,11 +18,30 @@ document.addEventListener('DOMContentLoaded', function() {
         root.innerHTML = '';
         asignaturas.forEach(asignatura => {
             const div = document.createElement('div');
-            div.textContent = `${asignatura.codigo}: ${asignatura.descripcion}`;
+            div.innerHTML = `<strong>${asignatura.codigo}: ${asignatura.descripcion}</strong><br>
+                             <button onclick="addAlumno('${asignatura.codigo}')">Agregar Alumno</button>
+                             <ul id="alumnos-${asignatura.codigo}"></ul>`;
             root.appendChild(div);
         });
     };
 
+    // Function to add a student
+    window.addAlumno = (codigo) => {
+        const nombreAlumno = prompt('Ingrese el nombre del alumno:');
+        if (nombreAlumno) {
+            const asignatura = asignaturas.find(a => a.codigo === codigo);
+            asignatura.alumnos.push(nombreAlumno);
+            const ul = document.getElementById(`alumnos-${codigo}`);
+            const li = document.createElement('li');
+            li.textContent = nombreAlumno;
+            ul.appendChild(li);
+        }
+    };
+
     // Initial load
-    fetchAsignaturas().then(renderAsignaturas);
+    let asignaturas = [];
+    fetchAsignaturas().then(data => {
+        asignaturas = data;
+        renderAsignaturas(asignaturas);
+    });
 });
